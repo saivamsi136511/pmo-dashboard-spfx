@@ -3,46 +3,38 @@ name: Build SPFx PMO Dashboard
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:   # allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Use Ubuntu runner with a Node 10 Docker container —
+    # this guarantees the exact right Node version without relying on setup-node.
+    runs-on: ubuntu-latest
+    container:
+      image: node:10.24.1-buster-slim
 
     steps:
-      # 1. Check out the repo
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Use Node 10 — required for SPFx 1.11 + gulp 3
-      - name: Setup Node.js 10
-        uses: actions/setup-node@v3
-        with:
-          node-version: '10.24.1'
+      - name: Show Node & npm versions
+        run: |
+          node --version
+          npm --version
 
-      # 3. Install dependencies (skip native build scripts, we provide prebuilt sass binary)
+      # Full install (no --ignore-scripts): node-sass downloads its own prebuilt
+      # Linux binary automatically on Node 10, no compilation required.
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm install
         env:
           SASS_BINARY_SITE: https://github.com/sass/node-sass/releases/download
 
-      # 4. Rebuild node-sass with the correct prebuilt binary for Node 10
-      - name: Rebuild node-sass
-        run: node node_modules/node-sass/scripts/install.js
-        env:
-          SASS_BINARY_SITE: https://github.com/sass/node-sass/releases/download
-
-      # 5. Bundle for production (minify + tree-shake)
       - name: Bundle (production)
-        run: .\node_modules\.bin\gulp bundle --ship
-        shell: pwsh
+        run: node_modules/.bin/gulp bundle --ship
 
-      # 6. Package into .sppkg
       - name: Package solution
-        run: .\node_modules\.bin\gulp package-solution --ship
-        shell: pwsh
+        run: node_modules/.bin/gulp package-solution --ship
 
-      # 7. Upload .sppkg as a downloadable artifact
       - name: Upload .sppkg artifact
         uses: actions/upload-artifact@v3
         with:
