@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "pmo-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/pmoDashboard/PmoDashboardWebPart.js",
+          "manifest": "./src/webparts/pmoDashboard/PmoDashboardWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "PmoDashboardWebPartStrings": "lib/webparts/pmoDashboard/loc/{locale}.js"
+  }
+}
