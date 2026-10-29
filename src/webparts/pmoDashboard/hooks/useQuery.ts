@@ -1,12 +1,11 @@
 import * as React from 'react';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
 
-// ─── Lightweight useQuery replacement ────────────────────────────────────────
-//
-// @tanstack/react-query@4 uses TypeScript 4+ syntax in its .d.ts files which
-// is incompatible with SPFx 1.11's TypeScript 3.3 compiler.
-// This module provides the same API surface used in this project.
+// ─── Custom useQuery (replaces @tanstack/react-query) ────────────────────────
+// Written in TypeScript 3.3-compatible syntax (no optional chaining, no
+// nullish coalescing, no const assertions, no template literal types).
 
-export interface UseQueryResult<TData, TError = Error> {
+export interface IUseQueryResult<TData, TError> {
   data: TData | undefined;
   isLoading: boolean;
   isError: boolean;
@@ -15,10 +14,9 @@ export interface UseQueryResult<TData, TError = Error> {
   refetch: () => void;
 }
 
-export function useQuery<TData, TError = Error>(
-  _queryKey: unknown[],
+export function useQuery<TData, TError>(
   queryFn: () => Promise<TData>
-): UseQueryResult<TData, TError> {
+): IUseQueryResult<TData, TError> {
   const [data, setData] = React.useState<TData | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [isError, setIsError] = React.useState<boolean>(false);
@@ -26,21 +24,21 @@ export function useQuery<TData, TError = Error>(
   const [dataUpdatedAt, setDataUpdatedAt] = React.useState<number>(0);
   const [tick, setTick] = React.useState<number>(0);
 
-  React.useEffect(() => {
-    let cancelled = false;
+  React.useEffect(function() {
+    var cancelled = false;
     setIsLoading(true);
     setIsError(false);
     setError(null);
 
     queryFn()
-      .then((result) => {
+      .then(function(result: TData) {
         if (!cancelled) {
           setData(result);
           setDataUpdatedAt(Date.now());
           setIsLoading(false);
         }
       })
-      .catch((err: TError) => {
+      .catch(function(err: TError) {
         if (!cancelled) {
           setIsError(true);
           setError(err);
@@ -48,11 +46,19 @@ export function useQuery<TData, TError = Error>(
         }
       });
 
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick]);
+    return function() { cancelled = true; };
+  }, [tick]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const refetch = React.useCallback(() => setTick((t) => t + 1), []);
+  function refetch(): void {
+    setTick(function(t: number) { return t + 1; });
+  }
 
-  return { data, isLoading, isError, error, dataUpdatedAt, refetch };
+  return { data: data, isLoading: isLoading, isError: isError, error: error, dataUpdatedAt: dataUpdatedAt, refetch: refetch };
+}
+
+// ─── Props ───────────────────────────────────────────────────────────────────
+
+export interface IDashboardViewProps {
+  context: WebPartContext;
+  title: string;
 }
