@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Show Node & npm versions
         run: |
@@ -36,7 +36,7 @@ jobs:
         run: node_modules/.bin/gulp package-solution --ship
 
       - name: Upload .sppkg artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pmo-dashboard-sppkg
           path: sharepoint/solution/pmo-dashboard.sppkg
