@@ -22,10 +22,10 @@ jobs:
           node --version
           npm --version
 
-      # Full install (no --ignore-scripts): node-sass downloads its own prebuilt
-      # Linux binary automatically on Node 10, no compilation required.
+      # Use the checked-in lockfile so TypeScript 3.3-compatible typings are
+      # installed consistently in CI.
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         env:
           SASS_BINARY_SITE: https://github.com/sass/node-sass/releases/download
 

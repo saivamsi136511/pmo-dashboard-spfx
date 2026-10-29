@@ -1,73 +1,50 @@
-# pmo-dashboard
+# PMO Dashboard
 
-## Summary
+This SharePoint Framework (SPFx) 1.11 client-side web part displays project
+data from the current SharePoint site. It reads the `PMO_Projects` list using
+the current user's SharePoint permissions; it is not a separately hosted static
+website.
 
-Short summary on functionality and used technologies.
+## Build
 
-[picture of the solution in action, if possible]
+This legacy SPFx version requires Node.js 10.x and TypeScript 3.3. The GitHub
+Actions workflow uses Node 10.24.1 and installs the pinned dependencies from
+`package-lock.json`.
 
-## Used SharePoint Framework Version
+```sh
+npm ci
+npm run build -- --ship
+node_modules/.bin/gulp package-solution --ship
+```
 
-![version](https://img.shields.io/badge/version-1.11-green.svg)
+The packaged solution is written to
+`sharepoint/solution/pmo-dashboard.sppkg`. The workflow uploads this file as
+the `pmo-dashboard-sppkg` artifact after a successful build.
 
-## Applies to
+## Deploy to SharePoint
 
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+1. Push the changes to `main` and wait for **Build SPFx PMO Dashboard** to
+   complete successfully.
+2. In the successful workflow run, download the `pmo-dashboard-sppkg` artifact
+   and extract `pmo-dashboard.sppkg`.
+3. Upload the `.sppkg` file to your tenant or site SharePoint App Catalog.
+4. In the App Catalog, select **Deploy**. If prompted, approve the deployment.
+   The package includes its client-side assets.
+5. On the SharePoint site where the dashboard should appear, create a list
+   named `PMO_Projects` with the internal fields `Title`, `Project_Status`,
+   and `Project_Manager` (Person or Group).
+6. Add a modern SharePoint page, add the **PmoDashboard** web part, and publish
+   the page. The current user's access to the site and list controls whether
+   project data can be read.
 
-> Get your own free development tenant by subscribing to [Microsoft 365 developer program](http://aka.ms/o365devprogram)
+`skipFeatureDeployment` is enabled, so a tenant administrator can make the
+web part available across sites during deployment. Otherwise, add the app to
+the target site as required by your App Catalog settings. The package is marked
+as domain isolated in `config/package-solution.json`; confirm that the tenant
+supports isolated web parts before deploying it.
 
-## Prerequisites
+## Local workbench
 
-> Any special pre-requisites?
-
-## Solution
-
-Solution|Author(s)
---------|---------
-folder name | Author details (name, company, twitter alias with link)
-
-## Version history
-
-Version|Date|Comments
--------|----|--------
-1.1|March 10, 2021|Update comment
-1.0|January 29, 2021|Initial release
-
-## Disclaimer
-
-**THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.**
-
----
-
-## Minimal Path to Awesome
-
-- Clone this repository
-- Ensure that you are at the solution folder
-- in the command-line run:
-  - **npm install**
-  - **gulp serve**
-
-> Include any additional steps as needed.
-
-## Features
-
-Description of the extension that expands upon high-level summary above.
-
-This extension illustrates the following concepts:
-
-- topic 1
-- topic 2
-- topic 3
-
-> Notice that better pictures and documentation will increase the sample usage and the value you are providing for others. Thanks for your submissions advance.
-
-> Share your web part with others through Microsoft 365 Patterns and Practices program to get visibility and exposure. More details on the community, open-source projects and other activities from http://aka.ms/m365pnp.
-
-## References
-
-- [Getting started with SharePoint Framework](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
-- [Building for Microsoft teams](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/build-for-teams-overview)
-- [Use Microsoft Graph in your solution](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/using-microsoft-graph-apis)
-- [Publish SharePoint Framework applications to the Marketplace](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/publish-to-marketplace-overview)
-- [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp) - Guidance, tooling, samples and open-source controls for your Microsoft 365 development
+Install dependencies with Node 10.x, then run `gulp serve` and use the local
+SharePoint workbench. A SharePoint tenant is needed to verify data access and
+the required list schema.
