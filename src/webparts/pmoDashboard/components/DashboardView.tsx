@@ -17,21 +17,21 @@ function getStatusStyle(status: string): { bg: string; color: string; border: st
 }
 
 function toInitials(name: string): string {
-  var parts = name.split(' ').filter(function(w) { return w.length > 0; });
-  return parts.slice(0, 2).map(function(w) { return w[0].toUpperCase(); }).join('');
+  var parts = name.split(' ').filter((w) => w.length > 0);
+  return parts.slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-var DashboardView: React.FC<IDashboardViewProps> = function(props) {
+var DashboardView: React.FC<IDashboardViewProps> = (props) => {
   var context = props.context;
   var title = props.title;
 
-  var service = React.useMemo(function() {
+  var service = React.useMemo(() => {
     return new SharePointListService(context);
   }, [context]);
 
-  var result = useQuery<IProject[], Error>(function() {
+  var result = useQuery<IProject[], Error>(() => {
     return service.getProjects();
   });
 
@@ -42,7 +42,7 @@ var DashboardView: React.FC<IDashboardViewProps> = function(props) {
   var dataUpdatedAt = result.dataUpdatedAt;
 
   // Inject spinner keyframes once
-  React.useEffect(function() {
+  React.useEffect(() => {
     var id = 'pmo-spin-style';
     if (!document.getElementById(id)) {
       var el = document.createElement('style');
@@ -143,7 +143,7 @@ var DashboardView: React.FC<IDashboardViewProps> = function(props) {
               )
             ),
             React.createElement('tbody', null,
-              projectList.map(function(project: IProject, index: number) {
+              projectList.map((project: IProject, index: number) => {
                 var sc = getStatusStyle(project.Project_Status);
                 var managerName = (project.Project_Manager && project.Project_Manager.Title)
                   ? project.Project_Manager.Title : '—';

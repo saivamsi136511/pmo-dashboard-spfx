@@ -24,21 +24,21 @@ export function useQuery<TData, TError>(
   const [dataUpdatedAt, setDataUpdatedAt] = React.useState<number>(0);
   const [tick, setTick] = React.useState<number>(0);
 
-  React.useEffect(function() {
+  React.useEffect(() => {
     var cancelled = false;
     setIsLoading(true);
     setIsError(false);
     setError(null);
 
     queryFn()
-      .then(function(result: TData) {
+      .then((result: TData) => {
         if (!cancelled) {
           setData(result);
           setDataUpdatedAt(Date.now());
           setIsLoading(false);
         }
       })
-      .catch(function(err: TError) {
+      .catch((err: TError) => {
         if (!cancelled) {
           setIsError(true);
           setError(err);
@@ -46,11 +46,11 @@ export function useQuery<TData, TError>(
         }
       });
 
-    return function() { cancelled = true; };
+    return () => { cancelled = true; };
   }, [tick]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function refetch(): void {
-    setTick(function(t: number) { return t + 1; });
+    setTick((t: number) => t + 1);
   }
 
   return { data: data, isLoading: isLoading, isError: isError, error: error, dataUpdatedAt: dataUpdatedAt, refetch: refetch };

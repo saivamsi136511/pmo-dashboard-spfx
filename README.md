@@ -7,33 +7,34 @@ website.
 
 ## Build
 
-This legacy SPFx version requires Node.js 10.x and TypeScript 3.3. The GitHub
-Actions workflow uses Node 10.24.1 and installs the pinned dependencies from
-`package-lock.json`.
+This legacy SPFx version requires Node.js 10.x, npm 6, and TypeScript 3.3.
+The GitHub Actions workflow uses Node 10.24.1 and installs the pinned
+dependencies from `package-lock.json`.
 
-```sh
+```powershell
 npm ci
-npm run build -- --ship
-node_modules/.bin/gulp package-solution --ship
+.\node_modules\.bin\gulp.cmd bundle --ship
+.\node_modules\.bin\gulp.cmd package-solution --ship
 ```
 
 The packaged solution is written to
-`sharepoint/solution/pmo-dashboard.sppkg`. The workflow uploads this file as
-the `pmo-dashboard-sppkg` artifact after a successful build.
+`sharepoint/solution/pmo-dashboard.sppkg`. GitHub Actions is optional: you can
+upload this locally generated file directly to the SharePoint App Catalog.
+When the workflow succeeds, it also uploads this file as the
+`pmo-dashboard-sppkg` artifact.
 
 ## Deploy to SharePoint
 
-1. Push the changes to `main` and wait for **Build SPFx PMO Dashboard** to
-   complete successfully.
-2. In the successful workflow run, download the `pmo-dashboard-sppkg` artifact
-   and extract `pmo-dashboard.sppkg`.
-3. Upload the `.sppkg` file to your tenant or site SharePoint App Catalog.
-4. In the App Catalog, select **Deploy**. If prompted, approve the deployment.
+1. Build the package locally using the commands above, or push to `main` and
+   download `pmo-dashboard.sppkg` from the `pmo-dashboard-sppkg` artifact in a
+   successful workflow run.
+2. Upload `pmo-dashboard.sppkg` to your tenant or site SharePoint App Catalog.
+3. In the App Catalog, select **Deploy**. If prompted, approve the deployment.
    The package includes its client-side assets.
-5. On the SharePoint site where the dashboard should appear, create a list
+4. On the SharePoint site where the dashboard should appear, create a list
    named `PMO_Projects` with the internal fields `Title`, `Project_Status`,
    and `Project_Manager` (Person or Group).
-6. Add a modern SharePoint page, add the **PmoDashboard** web part, and publish
+5. Add a modern SharePoint page, add the **PmoDashboard** web part, and publish
    the page. The current user's access to the site and list controls whether
    project data can be read.
 

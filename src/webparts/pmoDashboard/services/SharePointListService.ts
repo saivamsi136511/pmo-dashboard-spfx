@@ -91,7 +91,7 @@ export class SharePointListService {
   private _get<T>(endpoint: string): Promise<T[]> {
     return this.context.spHttpClient
       .get(endpoint, SPHttpClient.configurations.v1)
-      .then(function(response: SPHttpClientResponse): Promise<IODataResponse<T>> {
+      .then((response: SPHttpClientResponse): Promise<IODataResponse<T>> => {
         if (!response.ok) {
           throw new Error(
             'SharePoint REST API error [' + response.status + ']: ' +
@@ -100,7 +100,7 @@ export class SharePointListService {
         }
         return response.json();
       })
-      .then(function(data: IODataResponse<T>): T[] {
+      .then((data: IODataResponse<T>): T[] => {
         return data.value;
       });
   }
